@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const hashtagSchema = mongoose.Schema({
-    hashtag : { type: mongoose.Schema.Types.ObjectId, ref: 'hashtag' },
+    hashtag : { type: mongoose.Schema.Types.ObjectId, ref: 'hashtags' },
    });
 
 const tweetSchema = mongoose.Schema({
