@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+const mongoose = require("mongoose");
 
 const Tweet = require("../models/tweets");
 const User = require("../models/users");
@@ -11,11 +12,45 @@ router.get("/", (req, res) => {
     .then((data) => res.json(data));
 });
 
-router.get("/tag", (req, res) => {
-  Hashtag.find().then((data) => res.json(data));
-});
+router.post("/like", async (req, res) => {
+  const tweetId = req.body.tweetId;
+  const userId = req.body.userId;
+  console.log(tweetId);
+  console.log(userId);
 
-// router.like("/like", async (req, rest) => {});
+  const user = await User.findOne({ _id: userId });
+  const likedTweets = user.likedTweets;
+  console.log(likedTweets);
+
+  let updatedTweet;
+  let updatedUser;
+
+  const tweetObjectId = new mongoose.Types.ObjectId(tweetId);
+
+  if (likedTweets.some((e) => tweetObjectId.equals(e))) {
+    console.log("Unliked");
+    updatedTweet = await Tweet.updateOne(
+      { _id: tweetId },
+      { $inc: { likes: -1 } }
+    );
+    updatedUser = await User.updateOne(
+      { _id: userId },
+      { $pull: { likedTweets: tweetId } }
+    );
+  } else {
+    console.log("liked");
+    updatedTweet = await Tweet.updateOne(
+      { _id: tweetId },
+      { $inc: { likes: 1 } }
+    );
+    updatedUser = await User.updateOne(
+      { _id: userId },
+      { $addToSet: { likedTweets: tweetId } }
+    );
+  }
+
+  return res.json({ result: true, updatedTweet, updatedUser });
+});
 
 router.post("/post", (req, res) => {
   const regex = /#\w+/g;
@@ -117,8 +152,6 @@ router.post("/post", (req, res) => {
     });
   }
 });
-
-module.exports = router;
 
 router.delete("/delete", async (req, res) => {
   const id = req.body.id;
