@@ -45,4 +45,11 @@ router.post("/signin", (req, res) => {
   });
 });
 
+router.get("/getId/:id", async (req, res) => {
+  console.log(req.params.id);
+  const id = req.params.id;
+  const userData = await User.findOne({ _id: id });
+  return res.json({ userData });
+});
+
 module.exports = router;
