@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const tweetSchema = mongoose.Schema({
-  post: String,
+  post: {
+    type: String,
+    maxlength: 280,
+  },
   date: {
     type: Date,
     default: Date.now(),

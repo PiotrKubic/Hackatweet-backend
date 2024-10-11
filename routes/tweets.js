@@ -15,8 +15,6 @@ router.get("/", (req, res) => {
 router.post("/like", async (req, res) => {
   const tweetId = req.body.tweetId;
   const userId = req.body.userId;
-  console.log(tweetId);
-  console.log(userId);
 
   const user = await User.findOne({ _id: userId });
   const likedTweets = user.likedTweets;
